@@ -114,7 +114,7 @@ var totalSplit = micros.map(function(d,i){
                               {Axis:'Petroleum', Value:petroleumA[i],AdjustedValue:petroleumA[i]/800},
                               {Axis:'Asthma', Value:asthmaA[i],AdjustedValue:asthmaA[i]*10},
                               {Axis:'LungCancer', Value:lungA[i],AdjustedValue:(lungA[i]*1000-.4)*2.5},
-                                {Axis:'Coal',Value:coalA[i], AdjustedValue:coalA[i]/400}
+
 
                               //{Axis:'PollutionRating',Value:set[i],AdjustedValue:set[i]}
                             ]})

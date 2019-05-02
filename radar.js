@@ -17,8 +17,8 @@ Promise.all([asthmaP1,asthmaP2,fuelP,microsP,lungP,microsP1]).then(function(valu
   var microsBig1 = values[5]
   var lung = values[4].map(function(d){return {Area: d.Area, CancerType: d.CancerType, Percent: d.CaseCount/d.Population}})
   console.log('lung cancer rates',lung)
-  dataCrunch(asthma1,asthmaC, fuel,lung,microsBig,microsBig1)
-
+  var d= dataCrunch(asthma1,asthmaC, fuel,lung,microsBig,microsBig1)
+  drawRadar(d)
 }
 )
 
@@ -108,20 +108,25 @@ console.log('median percent lung cancer per split',lungA)
 
 var set = [7.9,6.8,6.7]
 var totalSplit = micros.map(function(d,i){
-                              return [{Set: i},
-                              {Axis:'Coal',Value:coalA[i]},
-                              {Axis:'NatGas', Value:natGasA[i]},
-                              {Axis:'Petroleum', Value:petroleumA[i]},
-                              {Axis:'Asthma', Value:asthmaA[i]},
-                              {Axis:'LungCancer', Value:lungA[i]},
-                              {Axis:'PollutionRating',Value:set[i]}]})
+                              return [
+                              {Axis:'Coal',Value:coalA[i], AdjustedValue:coalA[i]/400},
+                              {Axis:'NatGas', Value:natGasA[i],AdjustedValue:natGasA[i]/800},
+                              {Axis:'Petroleum', Value:petroleumA[i],AdjustedValue:petroleumA[i]/800},
+                              {Axis:'Asthma', Value:asthmaA[i],AdjustedValue:asthmaA[i]*10},
+                              {Axis:'LungCancer', Value:lungA[i],AdjustedValue:(lungA[i]*1000-.4)*2.5},
+                                {Axis:'Coal',Value:coalA[i], AdjustedValue:coalA[i]/400}
 
-console.log(totalSplit)
+                              //{Axis:'PollutionRating',Value:set[i],AdjustedValue:set[i]}
+                            ]})
+
+console.log('chart data',totalSplit)
+return totalSplit
 }
 
 
 
 var drawRadar = function(data){
+  console.log(data);
   var screen={
   width : 800,
   height : 800
@@ -134,8 +139,23 @@ var margins = {
   left:10,
   right:100
 };
+
+var  colorScale = d3.scaleOrdinal(d3.schemeSet1)
+
 var height = screen.width - margins.top - margins.bottom;
 var width = screen.width - margins.left - margins.right;
+
+var radius = 800/2-6
+
+var fullCircle = 2 * Math.PI;
+
+var dScale = d3.scaleLinear().domain([0,1]).range([0,radius])
+
+var rScale = d3.scaleLinear().domain([0,data[0].length]).range([0,fullCircle])
+
+var line = d3.lineRadial().angle(function(d,i){console.log(rScale(i));return rScale(i)})
+                          .radius(function(d,i){return dScale(d.AdjustedValue)})
+                          .curve(d3.curveCardinalClosed)
 
 var svg = d3.select('svg')
           .attr('width',screen.width)
@@ -143,6 +163,26 @@ var svg = d3.select('svg')
 
 var plot = svg.append('g')
             .attr('width',width)
-            .attr('height',height);
+            .attr('height',height)
+            .attr("transform", "translate(" + width /2 + "," + height / 1.5 + ")");;
+
+data.forEach(function(d,i){
+                  plot.append('path')
+                  .datum(d)
+                  .attr('fill','none')
+                  .attr('stroke','black')
+                  .attr('d',line)
+
+                })
+
+                data.forEach(function(d,i){
+                                  plot.append('path')
+                                  .datum(d)
+                                  .attr('opacity',.6)
+                                  .attr('fill',colorScale(i))
+                                  .attr('stroke','none')
+                                  .attr('d',line)})
+
+
 
 }

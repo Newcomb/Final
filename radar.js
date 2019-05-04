@@ -109,12 +109,12 @@ console.log('median percent lung cancer per split',lungA)
 var set = [7.9,6.8,6.7]
 var totalSplit = micros.map(function(d,i){
                               return [
-                              {Axis:'Coal',Value:coalA[i], AdjustedValue:coalA[i]/400},
-                              {Axis:'NatGas', Value:natGasA[i],AdjustedValue:natGasA[i]/800},
-                              {Axis:'Petroleum', Value:petroleumA[i],AdjustedValue:petroleumA[i]/800},
+                              {Axis:'Coal',Value:coalA[i], AdjustedValue:coalA[i]/500},
+                              {Axis:'NatGas', Value:natGasA[i],AdjustedValue:natGasA[i]/900},
+                              {Axis:'Petroleum', Value:petroleumA[i],AdjustedValue:petroleumA[i]/900},
                               {Axis:'Asthma', Value:asthmaA[i],AdjustedValue:asthmaA[i]*10},
-                              {Axis:'LungCancer', Value:lungA[i],AdjustedValue:(lungA[i]*1000-.4)*2.5},
-
+                              {Axis:'LungCancer', Value:lungA[i],AdjustedValue:(lungA[i]*1000)},
+{Axis:'Coal',Value:coalA[i], AdjustedValue:coalA[i]/500}
 
                               //{Axis:'PollutionRating',Value:set[i],AdjustedValue:set[i]}
                             ]})
@@ -126,10 +126,15 @@ return totalSplit
 
 
 var drawRadar = function(data){
+
+
+var allScale = [['100','180','180','2%','.02%'],['200','360','360','4%','.04%'],['300','540','540','6%','.06%'],
+['400','720','720','8%','.08%'],['500','900','900','10%','.10%']]
+
   console.log(data);
   var screen={
-  width : 800,
-  height : 800
+  width : 1000,
+  height : 1000
 };
 
 
@@ -151,38 +156,125 @@ var fullCircle = 2 * Math.PI;
 
 var dScale = d3.scaleLinear().domain([0,1]).range([0,radius])
 
-var rScale = d3.scaleLinear().domain([0,data[0].length]).range([0,fullCircle])
+var rScale = d3.scaleLinear().domain([0,5]).range([0,fullCircle])
 
-var line = d3.lineRadial().angle(function(d,i){console.log(rScale(i));return rScale(i)})
+var line = d3.lineRadial().angle(function(d,i){return rScale(i%5)})
                           .radius(function(d,i){return dScale(d.AdjustedValue)})
-                          .curve(d3.curveCardinalClosed)
+                          //.curve(d3.basisClosed)
+
 
 var svg = d3.select('svg')
           .attr('width',screen.width)
-          .attr('height',screen.height);
+          .attr('height',screen.height)
+          .attr("transform", "translate(" + width /14 + "," + height /100+ ")");
+
+console.log('slice',dScale.ticks(5).slice(1));
+
+var circleG = svg.append('g').classed("r-axis",true);
+
+var zAxis = circleG.append("g")
+    .attr("class", "a axis")
+  .selectAll("g")
+    .data(data[0])
+  .enter().append("g").attr("transform", "translate(" + width /1.75 + "," + height / 1.75 + ")")
+
+  zAxis.append("line")
+  .attr('y1',0)
+  .attr('x1',0)
+  .attr("x2", function(d, i){ return radius * Math.cos((fullCircle/5*i - Math.PI/2)); })
+  .attr("y2", function(d, i){ return radius * Math.sin((fullCircle/5*i - Math.PI/2)); })
+  .attr('stroke-dasharray',10)
+    .attr('stroke','black')
+
+var labels = zAxis.append("text")
+.attr("x", function(d, i){ return (radius+40) * Math.cos((fullCircle/5*i - Math.PI/2)); })
+.attr("y", function(d, i){ return (radius+40) * Math.sin((fullCircle/5*i - Math.PI/2)); })
+.text(function(d,i){return d.Axis})    .attr('font-size','25px');
+
+
+allScale.forEach(function(d,i){console.log(d,i)
+      zAxis.append('text')
+      .attr('x',function(db, ib){ return (radius/5 * (i+.8)) * Math.cos((fullCircle/5*ib - Math.PI/2)); })
+      .attr('y',function(db, ib){ return (radius/5 * (i+.8)) * Math.sin((fullCircle/5*ib - Math.PI/2)); })
+      .text(function(db,ib){return d[ib]})
+      .attr('font-size','18px')
+    })
+
+
+
+
+var outerCircle = circleG.append('circle').attr('r',radius)
+                          .attr("transform", "translate(" + width /1.75 + "," + height / 1.75+ ")")
+                          .attr('stroke','black')
+                          .attr('fill','none')          .attr('opacity',.6);
+
+var legCircle1 = circleG.append('circle').attr('r',radius/5)
+                          .attr("transform", "translate(" + width /1.75 + "," + height / 1.75 + ")")
+                          .attr('stroke','black')
+                          .attr('fill','none')
+                          .attr('stroke-dasharray',10)          .attr('opacity',.6);
+
+var legCircle2 = circleG.append('circle').attr('r',radius/5 *2)
+                          .attr("transform", "translate(" + width /1.75 + "," + height / 1.75 + ")")
+                          .attr('stroke','black')
+                          .attr('fill','none')
+                          .attr('stroke-dasharray',10)          .attr('opacity',.6);
+
+var legCircle3 = circleG.append('circle').attr('r',radius/5*3)
+                      .attr("transform", "translate(" + width /1.75 + "," + height / 1.75 + ")")
+                      .attr('stroke','black')
+                      .attr('fill','none')
+                      .attr('stroke-dasharray',10)          .attr('opacity',.6);
+
+var legCircle4 = circleG.append('circle').attr('r',radius/5*4)
+                          .attr("transform", "translate(" + width /1.75 + "," + height / 1.75 + ")")
+                          .attr('stroke','black')
+                          .attr('fill','none')
+                          .attr('stroke-dasharray',10)          .attr('opacity',.6);
+
+
+
+var centerPoint = circleG.append('circle').attr('r',5)
+                          .attr("transform", "translate(" + width /1.75 + "," + height / 1.75 + ")")
+                          .attr('stroke','black')
+                          .attr('fill','black');
 
 var plot = svg.append('g')
             .attr('width',width)
             .attr('height',height)
-            .attr("transform", "translate(" + width /2 + "," + height / 1.5 + ")");;
+            .attr("transform", "translate(" + width /1.75 + "," + height / 1.75 + ")");
+
 
 data.forEach(function(d,i){
                   plot.append('path')
                   .datum(d)
-                  .attr('fill','none')
+                  .attr('opacity',.6)
+                  .attr('fill',colorScale(i))
                   .attr('stroke','black')
-                  .attr('d',line)
+                  .attr('d',line)})
 
-                })
+                  data.forEach(function(d,i){console.log(d,i)
+                      plot.selectAll('circle1').data(d).enter().append('circle')
+                        .attr('r',5)
+                        .attr('cx',function(db, ib){ return 5*(radius/5 * ((db.AdjustedValue)) * Math.cos((fullCircle/5*ib - Math.PI/2))) })
+                        .attr('cy',function(db, ib){ return 5*(radius/5 * ((db.AdjustedValue)) * Math.sin((fullCircle/5* ib - Math.PI/2))) })
+                        .attr('fill',function(){return colorScale(i)})
+                      })
 
-                data.forEach(function(d,i){
-                                  plot.append('path')
-                                  .datum(d)
-                                  .attr('opacity',.6)
-                                  .attr('fill',colorScale(i))
-                                  .attr('stroke','none')
-                                  .attr('d',line)})
+var scales = svg.append("g")
+    .attr("class", "a axis")
+  .selectAll("g")
+    .data(data[0])
+  .enter().append("g").attr("transform", "translate(" + width /1.75 + "," + height / 1.75 + ")")
 
+
+allScale.forEach(function(d,i){console.log(d,i)
+      scales.append('text')
+      .attr('x',function(db, ib){ return (radius/5 * (i+.8)) * Math.cos((fullCircle/5*ib - Math.PI/2)); })
+      .attr('y',function(db, ib){ return (radius/5 * (i+.8)) * Math.sin((fullCircle/5*ib - Math.PI/2)); })
+      .text(function(db,ib){return d[ib]})
+      .attr('font-size','18px').attr('opacity',.4)
+    })
 
 
 }

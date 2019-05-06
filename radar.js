@@ -108,13 +108,12 @@ console.log('median percent lung cancer per split',lungA)
 
 var set = [7.9,6.8,6.7]
 var totalSplit = micros.map(function(d,i){
-                              return [
-                              {Axis:'Coal',Value:coalA[i], AdjustedValue:coalA[i]/500},
-                              {Axis:'NatGas', Value:natGasA[i],AdjustedValue:natGasA[i]/900},
-                              {Axis:'Petroleum', Value:petroleumA[i],AdjustedValue:petroleumA[i]/900},
-                              {Axis:'Asthma', Value:asthmaA[i],AdjustedValue:asthmaA[i]*10},
-                              {Axis:'LungCancer', Value:lungA[i],AdjustedValue:(lungA[i]*1000)},
-{Axis:'Coal',Value:coalA[i], AdjustedValue:coalA[i]/500}
+                              return [                {Axis:'Asthma Prevalence', Value:asthmaA[i],AdjustedValue:asthmaA[i]*10, TextValue: ""+(asthmaA[i]*100).toFixed(2)+"%"},
+                              {Axis:'Coal Burned',Value:coalA[i], AdjustedValue:coalA[i]/500, TextValue:""+coalA[i]+" tn btu"},
+                              {Axis:'Natural Gas Burned', Value:natGasA[i],AdjustedValue:natGasA[i]/900, TextValue: ""+natGasA[i]+" tn btu"},
+                              {Axis:'Petroleum Burned', Value:petroleumA[i],AdjustedValue:petroleumA[i]/900, TextValue: ""+petroleumA[i]+" tn btu"},
+                              {Axis:'Lung Cancer Prevalence', Value:lungA[i],AdjustedValue:(lungA[i]*1000), TextValue: ""+(lungA[i]*100).toFixed(3)+"%"},
+                {Axis:'Asthma Prevalence', Value:asthmaA[i],AdjustedValue:asthmaA[i]*10, TextValue: ""+(asthmaA[i]*100).toFixed(2)+"%"},
 
                               //{Axis:'PollutionRating',Value:set[i],AdjustedValue:set[i]}
                             ]})
@@ -150,7 +149,7 @@ var  colorScale = d3.scaleOrdinal(d3.schemeSet1)
 var height = screen.width - margins.top - margins.bottom;
 var width = screen.width - margins.left - margins.right;
 
-var radius = 800/2-6
+var radius = 600/2-6
 
 var fullCircle = 2 * Math.PI;
 
@@ -166,7 +165,7 @@ var line = d3.lineRadial().angle(function(d,i){return rScale(i%5)})
 var svg = d3.select('svg')
           .attr('width',screen.width)
           .attr('height',screen.height)
-          .attr("transform", "translate(" + width /14 + "," + height /100+ ")");
+          .attr("transform", "translate(" + width /40 + "," + height /100+ ")");
 
 console.log('slice',dScale.ticks(5).slice(1));
 
@@ -176,7 +175,7 @@ var zAxis = circleG.append("g")
     .attr("class", "a axis")
   .selectAll("g")
     .data(data[0])
-  .enter().append("g").attr("transform", "translate(" + width /1.75 + "," + height / 1.75 + ")")
+  .enter().append("g").attr("transform", "translate(" + width /2 + "," + height / 2 + ")")
 
   zAxis.append("line")
   .attr('y1',0)
@@ -187,9 +186,28 @@ var zAxis = circleG.append("g")
     .attr('stroke','black')
 
 var labels = zAxis.append("text")
-.attr("x", function(d, i){ return (radius+40) * Math.cos((fullCircle/5*i - Math.PI/2)); })
-.attr("y", function(d, i){ return (radius+40) * Math.sin((fullCircle/5*i - Math.PI/2)); })
-.text(function(d,i){return d.Axis})    .attr('font-size','25px');
+.attr("x", function(d, i){if(i==0) {return (radius) * Math.cos((fullCircle/5*i - Math.PI/2))}
+                          if (i==1){return (radius-350) * Math.cos((fullCircle/5*i - Math.PI/2))}
+                        if (i==2){return (radius-450) * Math.cos((fullCircle/5*i - Math.PI/2))}
+                      if (i==3){return (radius-150) * Math.cos((fullCircle/5*i - Math.PI/2))}
+                    if (i==4){return (radius-150) * Math.cos((fullCircle/5*i - Math.PI/2))}
+                  if (i==5){return (radius) * Math.cos((fullCircle/5*i - Math.PI/2))}})
+.attr("y", function(d, i){if(i==0) {return (radius+50) * Math.sin((fullCircle/5*i - Math.PI/2))}
+                          if (i==1){return (radius+800) * Math.sin((fullCircle/5*i - Math.PI/2))}
+                        if (i==2){return (radius+150) * Math.sin((fullCircle/5*i - Math.PI/2))}
+                      if (i==3){return (radius+150) * Math.sin((fullCircle/5*i - Math.PI/2))}
+                    if (i==4){return (radius+800) * Math.sin((fullCircle/5*i - Math.PI/2))}
+                  if (i==5){return (radius+50) * Math.sin((fullCircle/5*i - Math.PI/2))}})
+.text(function(d,i){return d.Axis})    .attr('font-size','25px')
+ .attr("transform", function(d,i){if (i==0){return "translate("+-80+")"}
+              if (i==1){return "rotate("+70+")"}
+            if (i==2){return "rotate("+-35+")"}
+          if (i==3){return "rotate("+35+")"}
+        if (i==4){return "rotate("+-70+")"}
+      if (i==5){return "translate("+-80+")"}})
+
+
+
 
 
 allScale.forEach(function(d,i){console.log(d,i)
@@ -204,30 +222,30 @@ allScale.forEach(function(d,i){console.log(d,i)
 
 
 var outerCircle = circleG.append('circle').attr('r',radius)
-                          .attr("transform", "translate(" + width /1.75 + "," + height / 1.75+ ")")
+                          .attr("transform", "translate(" + width /2 + "," + height / 2+ ")")
                           .attr('stroke','black')
                           .attr('fill','none')          .attr('opacity',.6);
 
 var legCircle1 = circleG.append('circle').attr('r',radius/5)
-                          .attr("transform", "translate(" + width /1.75 + "," + height / 1.75 + ")")
+                          .attr("transform", "translate(" + width /2 + "," + height / 2 + ")")
                           .attr('stroke','black')
                           .attr('fill','none')
                           .attr('stroke-dasharray',10)          .attr('opacity',.6);
 
 var legCircle2 = circleG.append('circle').attr('r',radius/5 *2)
-                          .attr("transform", "translate(" + width /1.75 + "," + height / 1.75 + ")")
+                          .attr("transform", "translate(" + width /2 + "," + height /2+ ")")
                           .attr('stroke','black')
                           .attr('fill','none')
                           .attr('stroke-dasharray',10)          .attr('opacity',.6);
 
 var legCircle3 = circleG.append('circle').attr('r',radius/5*3)
-                      .attr("transform", "translate(" + width /1.75 + "," + height / 1.75 + ")")
+                      .attr("transform", "translate(" + width /2 + "," + height /2 + ")")
                       .attr('stroke','black')
                       .attr('fill','none')
                       .attr('stroke-dasharray',10)          .attr('opacity',.6);
 
 var legCircle4 = circleG.append('circle').attr('r',radius/5*4)
-                          .attr("transform", "translate(" + width /1.75 + "," + height / 1.75 + ")")
+                          .attr("transform", "translate(" + width /2 + "," + height / 2 + ")")
                           .attr('stroke','black')
                           .attr('fill','none')
                           .attr('stroke-dasharray',10)          .attr('opacity',.6);
@@ -235,14 +253,14 @@ var legCircle4 = circleG.append('circle').attr('r',radius/5*4)
 
 
 var centerPoint = circleG.append('circle').attr('r',5)
-                          .attr("transform", "translate(" + width /1.75 + "," + height / 1.75 + ")")
+                          .attr("transform", "translate(" + width /2 + "," + height / 2 + ")")
                           .attr('stroke','black')
                           .attr('fill','black');
 
 var plot = svg.append('g')
             .attr('width',width)
             .attr('height',height)
-            .attr("transform", "translate(" + width /1.75 + "," + height / 1.75 + ")");
+            .attr("transform", "translate(" + width /2 + "," + height / 2 + ")");
 
 
 data.forEach(function(d,i){
@@ -253,19 +271,13 @@ data.forEach(function(d,i){
                   .attr('stroke','black')
                   .attr('d',line)})
 
-                  data.forEach(function(d,i){console.log(d,i)
-                      plot.selectAll('circle1').data(d).enter().append('circle')
-                        .attr('r',5)
-                        .attr('cx',function(db, ib){ return 5*(radius/5 * ((db.AdjustedValue)) * Math.cos((fullCircle/5*ib - Math.PI/2))) })
-                        .attr('cy',function(db, ib){ return 5*(radius/5 * ((db.AdjustedValue)) * Math.sin((fullCircle/5* ib - Math.PI/2))) })
-                        .attr('fill',function(){return colorScale(i)})
-                      })
+
 
 var scales = svg.append("g")
     .attr("class", "a axis")
   .selectAll("g")
     .data(data[0])
-  .enter().append("g").attr("transform", "translate(" + width /1.75 + "," + height / 1.75 + ")")
+  .enter().append("g").attr("transform", "translate(" + width /2+ "," + height / 2 + ")")
 
 
 allScale.forEach(function(d,i){console.log(d,i)
@@ -274,7 +286,50 @@ allScale.forEach(function(d,i){console.log(d,i)
       .attr('y',function(db, ib){ return (radius/5 * (i+.8)) * Math.sin((fullCircle/5*ib - Math.PI/2)); })
       .text(function(db,ib){return d[ib]})
       .attr('font-size','18px').attr('opacity',.4)
+      .attr('pointer-events','none')
     })
 
+
+    data.forEach(function(d,i){console.log(d,i)
+        plot.selectAll('circle1').data(d).enter().append('circle')
+          .attr('r',5)
+          .attr('cx',function(db, ib){ return (radius * ((db.AdjustedValue)) * Math.cos((fullCircle/5*ib - Math.PI/2))) })
+          .attr('cy',function(db, ib){ return (radius * ((db.AdjustedValue)) * Math.sin((fullCircle/5* ib - Math.PI/2))) })
+          .attr('fill',function(){return colorScale(i)})
+          .on('mouseover',function(db,ib){
+var tooltipRec = plot.append('rect')
+.attr('height',75)
+.attr('width',100)
+.style("opacity", 0)
+.classed("tooltip",true)
+.attr('fill','black')
+.style("border", "solid")
+.style("border-width", "2px")
+.style("border-radius", "5px")
+.style("padding", "5px")
+  .attr("x", (d3.mouse(this)[0]+20) + "px")
+  .attr("y", (d3.mouse(this)[1])-20 + "px")
+.style("opacity", 1)
+.attr('stroke','white')
+.style('position','absolute')
+
+var  tooltipText1 = plot.append('text').classed('tooltip',true).text(db.Axis +': ').style('position','absolute')
+  .attr("x", (d3.mouse(this)[0]+23) + "px")
+  .attr("y", (d3.mouse(this)[1])+17 + "px")
+  .attr('fill','white')
+  var  tooltipText2 = plot.append('text').classed('tooltip',true).text(db.TextValue).style('position','absolute')
+    .attr("x", (d3.mouse(this)[0]+23) + "px")
+    .attr("y", (d3.mouse(this)[1])+35 + "px")
+    .attr('fill','white')
+d3.select(this)
+.style("stroke", "black")
+
+          })
+          .on('mouseout', function(){
+            d3.selectAll('.tooltip').remove()
+            d3.select(this).style('stroke','none')
+          })
+
+        })
 
 }

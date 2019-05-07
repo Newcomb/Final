@@ -109,9 +109,9 @@ console.log('median percent lung cancer per split',lungA)
 var set = [7.9,6.8,6.7]
 var totalSplit = micros.map(function(d,i){
                               return [                {Axis:'Asthma Prevalence', Value:asthmaA[i],AdjustedValue:asthmaA[i]*10, TextValue: ""+(asthmaA[i]*100).toFixed(2)+"%"},
-                              {Axis:'Coal Burned(tn btu)',Value:coalA[i], AdjustedValue:coalA[i]/500, TextValue:""+coalA[i]+" tn btu"},
-                              {Axis:'Natural Gas Burned(tn btu)', Value:natGasA[i],AdjustedValue:natGasA[i]/900, TextValue: ""+natGasA[i]+" tn btu"},
-                              {Axis:'Petroleum Burned(tn btu)', Value:petroleumA[i],AdjustedValue:petroleumA[i]/900, TextValue: ""+petroleumA[i]+" tn btu"},
+                              {Axis:'Coal Burned(tn btu)',Value:coalA[i], AdjustedValue:coalA[i]/500, TextValue:coalA[i]},
+                              {Axis:'Natural Gas Burned(tn btu)', Value:natGasA[i],AdjustedValue:natGasA[i]/900, TextValue: natGasA[i]},
+                              {Axis:'Petroleum Burned(tn btu)', Value:petroleumA[i],AdjustedValue:petroleumA[i]/900, TextValue: petroleumA[i]},
                               {Axis:'Lung Cancer Prevalence', Value:lungA[i],AdjustedValue:(lungA[i]*1000), TextValue: ""+(lungA[i]*100).toFixed(3)+"%"},
                 {Axis:'Asthma Prevalence', Value:asthmaA[i],AdjustedValue:asthmaA[i]*10, TextValue: ""+(asthmaA[i]*100).toFixed(2)+"%"},
 

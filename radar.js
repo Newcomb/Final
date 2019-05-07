@@ -127,9 +127,12 @@ return totalSplit
 var drawRadar = function(data){
 
 
-var allScale = [['100','180','180','2%','.02%'],['200','360','360','4%','.04%'],['300','540','540','6%','.06%'],
-['400','720','720','8%','.08%'],['500','900','900','10%','.10%']]
 
+
+
+var allScale = [['2%',"100",'180','180',".02%"],["4%","200",'360','360',".04%"],
+["6%","300",'540','540',".06%"]
+,["8%","400",'720','720',".08%"],["10%","500",'900','900',".10%"]]
   console.log(data);
   var screen={
   width : 1000,
@@ -258,14 +261,16 @@ var plot = svg.append('g')
 var legendT = plot.append('text')
 .attr('x',400)
 .attr('y',function(d,i){return (i * 50)-382})
-.text('Legend: Avg Exposure to Particulate')
+.text('States Grouped by Avg Exposure')
 .attr('transform','translate('+-125+")")
+.attr('font-family','Josefin Sans')
 
 var legendT2 = plot.append('text')
 .attr('x',400)
 .attr('y',function(d,i){return (i * 50)-365})
-.text('Matter Over 2.5 Microns')
-.attr('transform','translate('+-70+")")
+.text('to Particulate Matter Over 2.5 Microns')
+.attr('transform','translate('+-125+")")
+.attr('font-family','Josefin Sans')
 
 var legend = plot.selectAll('rect').data(data).enter().append('rect')
 .attr('x',400)
@@ -276,12 +281,14 @@ var legend = plot.selectAll('rect').data(data).enter().append('rect')
 .attr('transform','translate('+-125+")")
 .attr('opacity',.6)
 
+
 var legD = ["Pollution Index Over 7.9","Pollution Index Between 6.8 & 7.9","Pollution Index Under 6.8"]
 var legendLines = plot.selectAll('text1').data(legD).enter().append('text')
-.attr('x',450)
+.attr('x',430)
 .attr('y',function(d,i){return (i * 50)-332})
 .text(function(d){return d})
 .attr('transform','translate('+-125+")")
+.attr('font-family','Josefin Sans')
 
 var radar = data.forEach(function(d,ib){
                   plot.append('path')

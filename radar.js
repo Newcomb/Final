@@ -198,7 +198,7 @@ var labels = zAxis.append("text")
                       if (i==3){return (radius+150) * Math.sin((fullCircle/5*i - Math.PI/2))}
                     if (i==4){return (radius+800) * Math.sin((fullCircle/5*i - Math.PI/2))}
                   if (i==5){return (radius+50) * Math.sin((fullCircle/5*i - Math.PI/2))}})
-.text(function(d,i){return d.Axis})    .attr('font-size','25px')
+.text(function(d,i){return d.Axis}).attr('font-size','25px').attr('font-family','Josefin Sans')
  .attr("transform", function(d,i){if (i==0){return "translate("+-80+")"}
               if (i==1){return "rotate("+70+")"}
             if (i==2){return "rotate("+-35+")"}
@@ -210,13 +210,7 @@ var labels = zAxis.append("text")
 
 
 
-allScale.forEach(function(d,i){console.log(d,i)
-      zAxis.append('text')
-      .attr('x',function(db, ib){ return (radius/5 * (i+.8)) * Math.cos((fullCircle/5*ib - Math.PI/2)); })
-      .attr('y',function(db, ib){ return (radius/5 * (i+.8)) * Math.sin((fullCircle/5*ib - Math.PI/2)); })
-      .text(function(db,ib){return d[ib]})
-      .attr('font-size','18px')
-    })
+
 
 
 
@@ -261,15 +255,77 @@ var plot = svg.append('g')
             .attr('width',width)
             .attr('height',height)
             .attr("transform", "translate(" + width /2 + "," + height / 2 + ")");
+var legendT = plot.append('text')
+.attr('x',400)
+.attr('y',function(d,i){return (i * 50)-382})
+.text('Legend: Avg Exposure to Particulate')
+.attr('transform','translate('+-125+")")
 
+var legendT2 = plot.append('text')
+.attr('x',400)
+.attr('y',function(d,i){return (i * 50)-365})
+.text('Matter Over 2.5 Microns')
+.attr('transform','translate('+-70+")")
 
-data.forEach(function(d,i){
+var legend = plot.selectAll('rect').data(data).enter().append('rect')
+.attr('x',400)
+.attr('y',function(d,i){return (i * 50)-350})
+.attr('width', 25)
+.attr('height',25)
+.attr('fill',function(d,i){return colorScale(i)})
+.attr('transform','translate('+-125+")")
+.attr('opacity',.6)
+
+var legD = ["Pollution Index Over 7.9","Pollution Index Between 6.8 & 7.9","Pollution Index Under 6.8"]
+var legendLines = plot.selectAll('text1').data(legD).enter().append('text')
+.attr('x',450)
+.attr('y',function(d,i){return (i * 50)-332})
+.text(function(d){return d})
+.attr('transform','translate('+-125+")")
+
+var radar = data.forEach(function(d,ib){
                   plot.append('path')
                   .datum(d)
                   .attr('opacity',.6)
-                  .attr('fill',colorScale(i))
+                  .attr("pointer-events",'fill')
+                  .attr('fill',colorScale(ib))
                   .attr('stroke','black')
-                  .attr('d',line)})
+                  .attr('d',line)
+                  .on('mouseover',function(d,i){
+                    d3.select(this).attr('opacity',1)
+                    var tooltipRec = plot.append('rect')
+                    .attr('height',75)
+                    .attr('width',175)
+                    .style("opacity", 0)
+                    .classed("tooltip",true)
+                    .attr('fill','black')
+                    .style("border", "solid")
+                    .style("border-width", "2px")
+                    .style("border-radius", "5px")
+                    .style("padding", "5px")
+                      .attr("x", (d3.mouse(this)[0]+20) + "px")
+                      .attr("y", (d3.mouse(this)[1])-20 + "px")
+                    .style("opacity", 1)
+                    .attr('stroke','white')
+                    .style('position','absolute')
+
+                    var  tooltipText1 = plot.append('text').classed('tooltip',true).text("Pollution Index:").style('position','absolute')
+                      .attr("x", (d3.mouse(this)[0]+23) + "px")
+                      .attr("y", (d3.mouse(this)[1])+17 + "px")
+                      .attr('fill','white')
+                      var  tooltipText2 = plot.append('text').classed('tooltip',true).text(function(){if (ib == 0){return "Greater Than 7.9"}
+                    if (ib==1){return "Between 6.8 and 7.9"}
+                    else{return "Less Than 6.8"}}).style('position','absolute')
+                        .attr("x", (d3.mouse(this)[0]+23) + "px")
+                        .attr("y", (d3.mouse(this)[1])+35 + "px")
+                        .attr('fill','white')
+                  })
+                  .on('mouseout',function(){d3.select(this).attr('opacity',.6);
+                d3.selectAll('.tooltip').remove()})
+                  .on('click',function(){d3.select(this).classed('lit',function(){if (d3.select(this).classed('lit')){return false}
+                  else{return true}})})
+})
+
 
 
 
@@ -285,8 +341,9 @@ allScale.forEach(function(d,i){console.log(d,i)
       .attr('x',function(db, ib){ return (radius/5 * (i+.8)) * Math.cos((fullCircle/5*ib - Math.PI/2)); })
       .attr('y',function(db, ib){ return (radius/5 * (i+.8)) * Math.sin((fullCircle/5*ib - Math.PI/2)); })
       .text(function(db,ib){return d[ib]})
-      .attr('font-size','18px').attr('opacity',.4)
+      .attr('font-size','18px').attr('opacity',.6)
       .attr('pointer-events','none')
+      .attr('font-family','Josefin Sans')
     })
 
 
@@ -299,7 +356,7 @@ allScale.forEach(function(d,i){console.log(d,i)
           .on('mouseover',function(db,ib){
 var tooltipRec = plot.append('rect')
 .attr('height',75)
-.attr('width',100)
+.attr('width',175)
 .style("opacity", 0)
 .classed("tooltip",true)
 .attr('fill','black')

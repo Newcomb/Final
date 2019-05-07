@@ -1,1 +1,8 @@
+@import url('https://fonts.googleapis.com/css?family=Inconsolata|Josefin+Sans');
 
+h1{
+  font-family: Inconsolata;
+}
+.lit{
+  opacity: 1;
+}

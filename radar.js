@@ -315,17 +315,18 @@ var radar = data.forEach(function(d,ib){
                     .style("opacity", 1)
                     .attr('stroke','white')
                     .style('position','absolute')
+                    .attr('pointer-events','none')
 
                     var  tooltipText1 = plot.append('text').classed('tooltip',true).text("Pollution Index:").style('position','absolute')
                       .attr("x", (d3.mouse(this)[0]+23) + "px")
                       .attr("y", (d3.mouse(this)[1])+17 + "px")
-                      .attr('fill','white')
+                      .attr('fill','white').attr('pointer-events','none')
                       var  tooltipText2 = plot.append('text').classed('tooltip',true).text(function(){if (ib == 0){return "Greater Than 7.9"}
                     if (ib==1){return "Between 6.8 and 7.9"}
                     else{return "Less Than 6.8"}}).style('position','absolute')
                         .attr("x", (d3.mouse(this)[0]+23) + "px")
                         .attr("y", (d3.mouse(this)[1])+35 + "px")
-                        .attr('fill','white')
+                        .attr('fill','white').attr('pointer-events','none')
                   })
                   .on('mouseout',function(){d3.select(this).attr('opacity',.6);
                 d3.selectAll('.tooltip').remove()})
